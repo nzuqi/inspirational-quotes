@@ -21,11 +21,11 @@ samples, guidance on mobile development, and a full API reference.
 
 ## Build for production
 
-## `flutter build appbundle --flavor prod`
+`flutter build appbundle --flavor prod`
 
 ---
 
-# api
+# API
 
 ## Getting Started
 
