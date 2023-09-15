@@ -27,6 +27,7 @@ Ignore these, implement your own
 
 - https://www.restapitutorial.com/httpstatuscodes.html
 - https://www.npmjs.com/package/validator
+- https://generate-random.org/api-key-generator
 
 # app
 

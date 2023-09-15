@@ -1,3 +1,4 @@
+const fs = require('fs');
 
 // check if object is empty
 const isObjEmpty = (obj) => {
@@ -21,14 +22,18 @@ const middleware = {
         const { authorization } = req.headers;
         const errResponse = {
             status: 3,
-            message: "Sorry, you're not authorized to make this request.",
+            message: "Unauthorized request",
         };
-        if (authorization) {
-            if (authorization === process.env.INSPR_AUTH) next();
-            else return res.status(401).send(errResponse);
-        } else {
-            return res.status(401).send(errResponse);
-        }
+        fs.readFile(__dirname + '/../../.key', 'utf8', (err, data) => {
+            if (err) return res.status(401).send(errResponse);
+
+            if (authorization && data) {
+                if (authorization.trim() === data.trim()) next();
+                else return res.status(401).send(errResponse);
+            } else {
+                return res.status(401).send(errResponse);
+            }
+        });
     },
 };
 
