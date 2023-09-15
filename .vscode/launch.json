@@ -1,0 +1,23 @@
+{
+    "version": "0.2.1",
+    "configurations": [
+      {
+        "name": "Inspr DEV",
+        "request": "launch",
+        "type": "dart",
+        "args": [
+          "--flavor",
+          "dev",
+        ]
+      },
+      {
+        "name": "Inspr PROD",
+        "request": "launch",
+        "type": "dart",
+        "args": [
+          "--flavor",
+          "prod",
+        ]
+      },
+    ]
+  }
