@@ -35,10 +35,12 @@ exports.create = async (req, res) => {
 
 // Retrieve all Quotes from the database
 exports.findAll = (req, res) => {
-    const { quote, author } = req.body;
+    const { query } = req.params;
     let condition = {};
-    if (quote) condition.quote = { $regex: new RegExp(quote), $options: "i" };
-    if (author) condition.author = { $regex: new RegExp(author), $options: "i" };
+    if (query) {
+        const search = { $regex: new RegExp(query), $options: "i" };
+        condition = { $or: [{ "author": search }, { "quote": search }] };
+    }
 
     Quote.find(condition)
         .then(data => {

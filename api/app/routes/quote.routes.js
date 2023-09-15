@@ -7,6 +7,8 @@ module.exports = app => {
     router.post("/create", quotes.create);
     // Retrieve all quotes
     router.get("/", quotes.findAll);
+    // Search quotes
+    router.get("/:query", quotes.findAll);
     // Retrieve a single Quote with id
     router.get("/:id", quotes.findOne);
     // Update a Quote with id
