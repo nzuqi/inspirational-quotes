@@ -23,7 +23,7 @@ samples, guidance on mobile development, and a full API reference.
 
 ## `flutter build appbundle --flavor prod`
 
-===
+---
 
 # api
 
