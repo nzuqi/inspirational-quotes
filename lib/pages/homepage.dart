@@ -136,7 +136,7 @@ class _HomepageState extends State<Homepage> {
               SlidableAction(
                 // label: 'Share',
                 backgroundColor:
-                    Theme.of(context).highlightColor.withOpacity(0.6),
+                    Theme.of(context).highlightColor.withOpacity(0.4),
                 foregroundColor: Theme.of(context).indicatorColor,
                 icon: MdiIcons.imageOutline,
                 onPressed: (BuildContext context) async {
@@ -148,7 +148,7 @@ class _HomepageState extends State<Homepage> {
               SlidableAction(
                 // label: 'Copy',
                 backgroundColor:
-                    Theme.of(context).highlightColor.withOpacity(0.4),
+                    Theme.of(context).highlightColor.withOpacity(0.2),
                 foregroundColor: Theme.of(context).indicatorColor,
                 icon: MdiIcons.clipboardTextOutline,
                 onPressed: (BuildContext context) {

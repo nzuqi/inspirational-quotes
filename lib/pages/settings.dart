@@ -90,33 +90,45 @@ class _SettingsState extends State<Settings> {
               offset: Offset.fromDirection(1.0),
               itemBuilder: (context) => [
                 PopupMenuItem(
-                    value: "Light",
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Icon(MdiIcons.lightbulbOnOutline,
-                            color: Theme.of(context).indicatorColor),
-                        Padding(padding: EdgeInsets.only(left: 10.0)),
-                        Text("Light",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).indicatorColor)),
-                      ],
-                    )),
+                  value: "Light",
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Icon(
+                        MdiIcons.lightbulbOnOutline,
+                        color: Theme.of(context).indicatorColor,
+                      ),
+                      Padding(padding: EdgeInsets.only(left: 10.0)),
+                      Text(
+                        "Light",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).indicatorColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 PopupMenuItem(
-                    value: "Dark",
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Icon(MdiIcons.lightbulbOn,
-                            color: Theme.of(context).indicatorColor),
-                        Padding(padding: EdgeInsets.only(left: 10.0)),
-                        Text("Dark",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).indicatorColor)),
-                      ],
-                    )),
+                  value: "Dark",
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Icon(
+                        MdiIcons.lightbulbOutline,
+                        color: Theme.of(context).indicatorColor,
+                      ),
+                      Padding(padding: EdgeInsets.only(left: 10.0)),
+                      Text(
+                        "Dark",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).indicatorColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 // PopupMenuItem(
                 //   value: "System",
                 //   child: Row(

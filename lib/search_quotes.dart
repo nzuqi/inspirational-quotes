@@ -184,7 +184,7 @@ class _SearchDialog extends State<SearchDialog> {
                                   // label: 'Share',
                                   backgroundColor: Theme.of(context)
                                       .highlightColor
-                                      .withOpacity(0.6),
+                                      .withOpacity(0.4),
                                   foregroundColor:
                                       Theme.of(context).indicatorColor,
                                   icon: MdiIcons.imageOutline,
@@ -199,7 +199,7 @@ class _SearchDialog extends State<SearchDialog> {
                                   // label: 'Copy',
                                   backgroundColor: Theme.of(context)
                                       .highlightColor
-                                      .withOpacity(0.4),
+                                      .withOpacity(0.2),
                                   foregroundColor:
                                       Theme.of(context).indicatorColor,
                                   icon: MdiIcons.clipboardTextOutline,

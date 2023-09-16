@@ -140,6 +140,12 @@ class _MyAppState extends State<MyApp> {
         DatabaseHelper.columnSetting, ['fav_conf_enabled']);
     pushEnabled = await dbHelper.queryWhere(DatabaseHelper.settingsTable,
         DatabaseHelper.columnSetting, ['push_enabled']);
+    //user onboarding
+    userOnboarding = await dbHelper.queryWhere(DatabaseHelper.settingsTable,
+        DatabaseHelper.columnSetting, ['user_onboarding']);
+    if (userOnboarding.isNotEmpty) {
+      isOnboarding = (userOnboarding[0]['value'] == 'true') ? false : true;
+    }
   }
 
   void getCurrentAppTheme() async {
@@ -277,26 +283,27 @@ class _AppShellState extends State<AppShell> {
                   parallaxOffset: 0.2,
                   collapsed: Visibility(
                     child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Padding(padding: EdgeInsets.only(top: 20.0)),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Container(
-                                  height: 4,
-                                  width: 60,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    color: Colors.blueGrey[100],
-                                  ),
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(padding: EdgeInsets.only(top: 20.0)),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Container(
+                                height: 4,
+                                width: 60,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  color: Colors.blueGrey[100],
                                 ),
                               ),
-                            ],
-                          ),
-                        ]),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                   panel: Visibility(
                     visible: true,
@@ -304,58 +311,59 @@ class _AppShellState extends State<AppShell> {
                       children: <Widget>[
                         getPage(_currentPage),
                         Positioned(
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            child: Padding(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          child: Padding(
+                            padding: EdgeInsets.all(0.0),
+                            child: AppBar(
+                              backgroundColor:
+                                  Theme.of(context).backgroundColor,
+                              centerTitle: false,
+                              title: Padding(
                                 padding:
-                                    EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                                child: AppBar(
-                                  backgroundColor:
-                                      Theme.of(context).backgroundColor,
-                                  centerTitle: false,
-                                  title: Padding(
-                                    padding: EdgeInsets.fromLTRB(
-                                        0.0, 15.0, 0.0, 0.0),
-                                    child: Text(
-                                      _pageTitle,
-                                      style: TextStyle(
-                                          color:
-                                              Theme.of(context).indicatorColor,
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 22.0),
-                                    ),
+                                    EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
+                                child: Text(
+                                  _pageTitle,
+                                  style: TextStyle(
+                                    color: Theme.of(context).indicatorColor,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 22.0,
                                   ),
-                                  elevation: 0.5,
-                                  automaticallyImplyLeading: false,
-                                  actions: <Widget>[
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                          top: 15.0, right: 12.0),
-                                      child: IconButton(
-                                        icon: Icon(MdiIcons.magnify,
-                                            color: Theme.of(context)
-                                                .indicatorColor),
-                                        iconSize: 22.0,
-                                        onPressed: () => searchQuoteDialog(),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                          top: 15.0, right: 12.0),
-                                      child: IconButton(
-                                        icon: Icon(MdiIcons.close,
-                                            color: Theme.of(context)
-                                                .indicatorColor),
-                                        iconSize: 22.0,
-                                        onPressed: () => _pc.close(),
-                                      ),
-                                    )
-                                  ],
-                                  flexibleSpace: Container(
-                                    height: 100,
+                                ),
+                              ),
+                              elevation: 0.5,
+                              automaticallyImplyLeading: false,
+                              actions: <Widget>[
+                                Padding(
+                                  padding:
+                                      EdgeInsets.only(top: 15.0, right: 12.0),
+                                  child: IconButton(
+                                    icon: Icon(MdiIcons.magnify,
+                                        color:
+                                            Theme.of(context).indicatorColor),
+                                    iconSize: 22.0,
+                                    onPressed: () => searchQuoteDialog(),
                                   ),
-                                ))),
+                                ),
+                                Padding(
+                                  padding:
+                                      EdgeInsets.only(top: 15.0, right: 12.0),
+                                  child: IconButton(
+                                    icon: Icon(MdiIcons.close,
+                                        color:
+                                            Theme.of(context).indicatorColor),
+                                    iconSize: 22.0,
+                                    onPressed: () => _pc.close(),
+                                  ),
+                                )
+                              ],
+                              flexibleSpace: Container(
+                                height: 100,
+                              ),
+                            ),
+                          ),
+                        ),
                         Align(
                           alignment: Alignment.bottomLeft,
                           child: BottomNavigationBar(
@@ -449,10 +457,10 @@ class _AppShellState extends State<AppShell> {
               child: !_showQuotesLoadError
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
+                      children: const <Widget>[
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const <Widget>[
+                          children: <Widget>[
                             CircularProgressIndicator(
                               strokeWidth: 4.0,
                               backgroundColor: Colors
@@ -540,8 +548,7 @@ class _AppShellState extends State<AppShell> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              // (!isSubscribed && subscriptionAvailable && !isOnTrial)
-              //     ? InkWell(
+              // InkWell(
               //         child: Container(
               //           padding: EdgeInsets.fromLTRB(12.0, 4.0, 12.0, 4.0),
               //           decoration: BoxDecoration(
@@ -579,13 +586,12 @@ class _AppShellState extends State<AppShell> {
               //           _pc.open();
               //         },
               //       )
-              //     :
               SizedBox(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   IconButton(
-                    tooltip: "Randomize Quotes",
+                    tooltip: "Randomize quotes",
                     icon: Icon(
                       MdiIcons.shuffle,
                       color: Theme.of(context).bottomAppBarColor,
@@ -605,7 +611,7 @@ class _AppShellState extends State<AppShell> {
                   ),
                   // (isSubscribed || isOnTrial) ?
                   IconButton(
-                    tooltip: "Search Quotes",
+                    tooltip: "Search quotes",
                     icon: Icon(
                       MdiIcons.magnify,
                       color: Theme.of(context).bottomAppBarColor,
@@ -664,39 +670,41 @@ class _AppShellState extends State<AppShell> {
                 ),
               ),
               Padding(
-                  padding: EdgeInsets.fromLTRB(60.0, 80.0, 15.0, 0.0),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          currentQuote['quote'],
-                          maxLines: 40,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            color: Theme.of(context).indicatorColor,
-                          ),
+                padding: EdgeInsets.fromLTRB(60.0, 80.0, 15.0, 0.0),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        currentQuote['quote'],
+                        maxLines: 40,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize: 20.0,
+                          color: Theme.of(context).indicatorColor,
                         ),
                       ),
-                    ],
-                  )),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
           Padding(
-              padding: EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 0.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Text(
-                    "\u0336 " + currentQuote['author'],
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        color: Theme.of(context).bottomAppBarColor,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ],
-              )),
+            padding: EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 0.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Text(
+                  "\u0336 " + currentQuote['author'],
+                  style: TextStyle(
+                      fontSize: 16.0,
+                      color: Theme.of(context).bottomAppBarColor,
+                      fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+          ),
           Padding(
             padding: EdgeInsets.fromLTRB(47.0, 20.0, 15.0, 0.0),
             child: Row(
@@ -762,10 +770,11 @@ class _AppShellState extends State<AppShell> {
                   color: Theme.of(context).bottomAppBarColor,
                   iconSize: 20.0,
                   onPressed: () {
-                    _favoriteQuote(
-                      currentQuote['is_favorite'] ? false : true,
-                      currentQuote['id'],
-                    );
+                    bool v = currentQuote['is_favorite'] ? false : true;
+                    _favoriteQuote(v, currentQuote['id']);
+                    currentQuote['is_favorite'] = !v;
+                    allQuotes[allQuotes.indexWhere(
+                        (q) => q['_id'] == currentQuote['id'])] = currentQuote;
                   },
                 ),
                 // Visibility(
@@ -784,10 +793,11 @@ class _AppShellState extends State<AppShell> {
   }
 
   Future _favoriteQuote(bool favorite, int id) async {
-    var resp = await favoriteQuote(favorite, id);
-    setState(() {
-      _renderedQuotes = resp;
-    });
+    // var resp = await favoriteQuote(favorite, id);
+    // setState(() {
+    //   _renderedQuotes = resp;
+    // });
+    await favoriteQuote(favorite, id);
     var msg = favorite ? "added to" : "removed from";
     showSnackbar(
       context: context,

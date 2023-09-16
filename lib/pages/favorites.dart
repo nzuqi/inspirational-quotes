@@ -62,11 +62,12 @@ class _FavoritesState extends State<Favorites> {
                       ),
                       Padding(padding: EdgeInsets.only(right: 8)),
                       Padding(
-                          child: Text(
-                            "Remove from favorites",
-                            style: TextStyle(color: Colors.deepOrange),
-                          ),
-                          padding: EdgeInsets.only(top: 3, right: 16)),
+                        child: Text(
+                          "Remove from favorites",
+                          style: TextStyle(color: Colors.deepOrange),
+                        ),
+                        padding: EdgeInsets.only(top: 3, right: 16),
+                      ),
                     ],
                   ),
                 ),
