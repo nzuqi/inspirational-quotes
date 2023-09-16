@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:inspr/common.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -27,8 +24,6 @@ List<dynamic> _renderedQuotes = [];
 Random random = Random();
 int initialPage = 0;
 PanelController _pc = PanelController();
-FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
 bool isOnboarding = true;
 
 PageController _controller = PageController(
@@ -63,8 +58,12 @@ class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback = (
+        X509Certificate cert,
+        String host,
+        int port,
+      ) =>
+          true;
   }
 }
 
@@ -75,7 +74,6 @@ _httpFix() {
 
 void main() {
   _httpFix();
-  // _subscription.enablePendingPurchases(); //required to get subscriptions
   runApp(MyApp());
 }
 
@@ -120,39 +118,6 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Future _scheduleNotification(bool vibrate, bool playSound,
-      String scheduledTime, String title, String notification) async {
-    var hour = int.parse(scheduledTime.split(":")[0]);
-    var minute = int.parse(scheduledTime.split(":")[1]);
-    var time = Time(hour, minute, 0);
-    var vibrationPattern = Int64List(4);
-    vibrationPattern[0] = 0;
-    vibrationPattern[1] = 1000;
-    vibrationPattern[2] = 5000;
-    vibrationPattern[3] = 2000;
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'channel id', 'channel name',
-        channelDescription: 'channel description',
-        importance: Importance.max,
-        priority: Priority.high,
-        playSound: playSound,
-        enableVibration: vibrate,
-        vibrationPattern: vibrationPattern);
-    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-    var platformChannelSpecifics = NotificationDetails(
-        android: androidPlatformChannelSpecifics,
-        iOS: iOSPlatformChannelSpecifics);
-    // ignore: deprecated_member_use
-    await flutterLocalNotificationsPlugin.showDailyAtTime(
-      0,
-      title,
-      notification,
-      time,
-      platformChannelSpecifics,
-      payload: playSound ? 'No_Sound' : 'Default_Sound',
-    );
-  }
-
   Future<void> _initPackageInfo() async {
     final info = await PackageInfo.fromPlatform();
     setState(() {
@@ -162,107 +127,21 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    var initializationSettingsAndroid =
-        AndroidInitializationSettings('@drawable/inspr_push_icon');
-    var initializationSettingsIOS = IOSInitializationSettings();
-    var initializationSettings = InitializationSettings(
-        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: onSelectNotification);
     super.initState();
     initAppSettings();
     getCurrentAppTheme();
     _inspectQuotes();
-    // initializePurchases();
     _initPackageInfo();
   }
 
   @override
   void dispose() {
-    // subscription.cancel();
     super.dispose();
   }
 
   _houseKeeping() async {
     favEnabled = await dbHelper.queryWhere(DatabaseHelper.settingsTable,
         DatabaseHelper.columnSetting, ['fav_conf_enabled']);
-    pushEnabled = await dbHelper.queryWhere(DatabaseHelper.settingsTable,
-        DatabaseHelper.columnSetting, ['push_enabled']);
-    notificationTime = await dbHelper.queryWhere(DatabaseHelper.settingsTable,
-        DatabaseHelper.columnSetting, ['notification_time']);
-    soundEnabled = await dbHelper.queryWhere(DatabaseHelper.settingsTable,
-        DatabaseHelper.columnSetting, ['sound_enabled']);
-    vibrationEnabled = await dbHelper.queryWhere(DatabaseHelper.settingsTable,
-        DatabaseHelper.columnSetting, ['vibration_enabled']);
-    currentUserRow = await dbHelper.queryWhere(DatabaseHelper.settingsTable,
-        DatabaseHelper.columnSetting, ['current_user']);
-    if (currentUserRow.isNotEmpty) {
-      if (currentUserRow[0]['value'] != '') {
-        currentUser = json.decode(currentUserRow[0]['value']);
-      }
-      // print(currentUser);
-      signedIn = (currentUserRow[0]['value'] == '') ? false : true;
-    }
-    bool _val = (pushEnabled[0]['value'] == 'true') ? true : false;
-    bool _soundval = (soundEnabled[0]['value'] == 'true') ? true : false;
-    bool _vibrationval =
-        (vibrationEnabled[0]['value'] == 'true') ? true : false;
-    String _time = notificationTime[0]['value'];
-    //user onboarding
-    userOnboarding = await dbHelper.queryWhere(DatabaseHelper.settingsTable,
-        DatabaseHelper.columnSetting, ['user_onboarding']);
-    if (userOnboarding.isNotEmpty) {
-      isOnboarding = (userOnboarding[0]['value'] == 'true') ? false : true;
-    }
-    //==== process subscription ====
-    userSubscription = await dbHelper.queryWhere(DatabaseHelper.settingsTable,
-        DatabaseHelper.columnSetting, ['subscription']);
-    if (userSubscription.isNotEmpty) {
-      if (userSubscription[0]['value'] != '') {
-        localSubscriptionData = json.decode(userSubscription[0]['value']);
-        var now = DateTime.now();
-        var localExpiresOn = DateTime.fromMillisecondsSinceEpoch(
-            int.parse(localSubscriptionData['expirytime'].toString()) * 1000);
-        var expiresOn = DateTime(
-            localExpiresOn.year, localExpiresOn.month, localExpiresOn.day);
-        if (expiresOn.isBefore(now)) {
-          isSubscribed = false;
-        } else {
-          isSubscribed = true;
-        }
-      }
-    }
-    //==== ------------------- ====
-    //==== process trial days ====
-    trialExpiryData = await dbHelper.queryWhere(DatabaseHelper.settingsTable,
-        DatabaseHelper.columnSetting, ['trial_expiry']);
-    if (trialExpiryData.isNotEmpty) {
-      if (trialExpiryData[0]['value'] != '') {
-        var now = DateTime.now();
-        var localExpiresOn = DateTime.fromMillisecondsSinceEpoch(
-            int.parse(trialExpiryData[0]['value'].toString()));
-        var expiresOn = DateTime(
-            localExpiresOn.year, localExpiresOn.month, localExpiresOn.day);
-        if (expiresOn.isBefore(now)) {
-          isOnTrial = false;
-          //reset on DB
-          await dbHelper.update({
-            '_id': trialExpiryData[0]['_id'],
-            'setting': 'trial_expiry',
-            'value': '',
-            'modified_on': DateTime.now().millisecondsSinceEpoch
-          }, DatabaseHelper.settingsTable);
-        } else {
-          isOnTrial = true;
-        }
-      }
-    }
-    //==== ------------------- ====
-    await flutterLocalNotificationsPlugin.cancelAll();
-    if (_val) {
-      await _scheduleNotification(_vibrationval, _soundval, _time,
-          "Get inspired", "A few quotes today will keep you inspired.");
-    }
   }
 
   void getCurrentAppTheme() async {
