@@ -145,19 +145,11 @@ class _SearchDialog extends State<SearchDialog> {
                                       : MdiIcons.heartOutline,
                                   onPressed: (BuildContext context) {
                                     _favoriteQuote(
-                                        _searchedQuotes[index]['is_favorite']
-                                            ? false
-                                            : true,
-                                        _searchedQuotes[index]['id']);
-                                    if (_searchedQuotes[index]['is_favorite']) {
-                                      setState(() {
-                                        countFavorites--;
-                                      });
-                                    } else {
-                                      setState(() {
-                                        countFavorites++;
-                                      });
-                                    }
+                                      _searchedQuotes[index]['is_favorite']
+                                          ? false
+                                          : true,
+                                      _searchedQuotes[index]['id'],
+                                    );
                                   },
                                 ),
                                 SlidableAction(

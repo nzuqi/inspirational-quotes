@@ -1,46 +1,15 @@
 import 'dart:math';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'database_helper.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
-List<String> proFeatures = [
-  "Add quotes to images & share",
-  "Regular quotes notifications",
-  "Search quotes easily",
-  "Get unlimited favorites",
-  "Automated back-ups & restore",
-  "Regular quotes updates",
-  // "Unlimited pins",
-];
-
 final GlobalKey<ScaffoldState> mainScaffoldKey = GlobalKey<ScaffoldState>();
-
-GoogleSignIn googleSignIn = GoogleSignIn(
-  scopes: <String>['email', 'profile'],
-);
 
 dynamic pushEnabled = {};
 dynamic favEnabled = {};
-dynamic soundEnabled = {};
-dynamic vibrationEnabled = {};
-dynamic notificationTime = {};
 dynamic userOnboarding = {};
-dynamic userSignedIn = {};
-dynamic currentUserRow = {};
-dynamic currentUser = {};
-dynamic userSubscription = {};
-dynamic localSubscriptionData = {};
-dynamic trialExpiryData = {};
-
-bool signedIn = false;
-bool isSubscribed = false;
-bool isOnTrial = false;
-
-int countFavorites = 0;
-int favoritesLimit = 20;
 
 String api = 'inspr.martin.co.ke:5302';
 
@@ -99,9 +68,6 @@ customMessages(String key) {
 
 void initAppSettings() async {
   // int count = await dbHelper.queryRowCount(DatabaseHelper.settingsTable);
-  var today = DateTime.now();
-  var expiry = DateTime(today.year, today.month, today.day + trialDays)
-      .millisecondsSinceEpoch;
   // if (count == 0) {
   Map<String, dynamic> defaultFavConf = {
     DatabaseHelper.columnSetting: 'fav_conf_enabled',
@@ -121,33 +87,9 @@ void initAppSettings() async {
     DatabaseHelper.columnCreatedOn: DateTime.now().millisecondsSinceEpoch,
     DatabaseHelper.columnModifiedOn: DateTime.now().millisecondsSinceEpoch
   };
-  Map<String, dynamic> defaultSoundEnabled = {
-    DatabaseHelper.columnSetting: 'sound_enabled',
-    DatabaseHelper.columnSettingValue: 'true',
-    DatabaseHelper.columnCreatedOn: DateTime.now().millisecondsSinceEpoch,
-    DatabaseHelper.columnModifiedOn: DateTime.now().millisecondsSinceEpoch
-  };
-  Map<String, dynamic> defaultVibrationEnabled = {
-    DatabaseHelper.columnSetting: 'vibration_enabled',
-    DatabaseHelper.columnSettingValue: 'false',
-    DatabaseHelper.columnCreatedOn: DateTime.now().millisecondsSinceEpoch,
-    DatabaseHelper.columnModifiedOn: DateTime.now().millisecondsSinceEpoch
-  };
-  Map<String, dynamic> defaultNotificationTime = {
-    DatabaseHelper.columnSetting: 'notification_time',
-    DatabaseHelper.columnSettingValue: '08:00',
-    DatabaseHelper.columnCreatedOn: DateTime.now().millisecondsSinceEpoch,
-    DatabaseHelper.columnModifiedOn: DateTime.now().millisecondsSinceEpoch
-  };
   Map<String, dynamic> userOnboarding = {
     DatabaseHelper.columnSetting: 'user_onboarding',
     DatabaseHelper.columnSettingValue: 'false',
-    DatabaseHelper.columnCreatedOn: DateTime.now().millisecondsSinceEpoch,
-    DatabaseHelper.columnModifiedOn: DateTime.now().millisecondsSinceEpoch
-  };
-  Map<String, dynamic> trialExpiry = {
-    DatabaseHelper.columnSetting: 'trial_expiry',
-    DatabaseHelper.columnSettingValue: expiry,
     DatabaseHelper.columnCreatedOn: DateTime.now().millisecondsSinceEpoch,
     DatabaseHelper.columnModifiedOn: DateTime.now().millisecondsSinceEpoch
   };
@@ -160,24 +102,10 @@ void initAppSettings() async {
       DatabaseHelper.settingsTable, DatabaseHelper.columnSetting, ['theme']);
   var pushEnabledCheck = await dbHelper.queryWhere(DatabaseHelper.settingsTable,
       DatabaseHelper.columnSetting, ['push_enabled']);
-  var soundEnabledCheck = await dbHelper.queryWhere(
-      DatabaseHelper.settingsTable,
-      DatabaseHelper.columnSetting,
-      ['sound_enabled']);
-  var vibrationEnabledCheck = await dbHelper.queryWhere(
-      DatabaseHelper.settingsTable,
-      DatabaseHelper.columnSetting,
-      ['vibration_enabled']);
-  var notificationTimeCheck = await dbHelper.queryWhere(
-      DatabaseHelper.settingsTable,
-      DatabaseHelper.columnSetting,
-      ['notification_time']);
   var userOnboardingCheck = await dbHelper.queryWhere(
       DatabaseHelper.settingsTable,
       DatabaseHelper.columnSetting,
       ['user_onboarding']);
-  var trialExpiryCheck = await dbHelper.queryWhere(DatabaseHelper.settingsTable,
-      DatabaseHelper.columnSetting, ['trial_expiry']);
 
   if (favConfEnabledCheck.isEmpty) {
     await dbHelper.insert(defaultFavConf, DatabaseHelper.settingsTable);
@@ -188,22 +116,8 @@ void initAppSettings() async {
   if (pushEnabledCheck.isEmpty) {
     await dbHelper.insert(defaultPushEnabled, DatabaseHelper.settingsTable);
   }
-  if (soundEnabledCheck.isEmpty) {
-    await dbHelper.insert(defaultSoundEnabled, DatabaseHelper.settingsTable);
-  }
-  if (vibrationEnabledCheck.isEmpty) {
-    await dbHelper.insert(
-        defaultVibrationEnabled, DatabaseHelper.settingsTable);
-  }
-  if (notificationTimeCheck.isEmpty) {
-    await dbHelper.insert(
-        defaultNotificationTime, DatabaseHelper.settingsTable);
-  }
   if (userOnboardingCheck.isEmpty) {
     await dbHelper.insert(userOnboarding, DatabaseHelper.settingsTable);
-  }
-  if (trialExpiryCheck.isEmpty) {
-    await dbHelper.insert(trialExpiry, DatabaseHelper.settingsTable);
   }
   // }
 }
@@ -356,71 +270,10 @@ Future userOnboarded() async {
   }
 }
 
-Future addUser(
-    {scaffoldKey,
-    String? displayName,
-    String? idToken,
-    String? avatar,
-    String? email}) async {
-  var data = {
-    'display_name': displayName,
-    'id_token': idToken,
-    'avatar': avatar,
-    'email': email
-  };
-  var body = json.encode(data);
-  return await http
-      .post(Uri.https(api, '/api/users/create'), body: body, headers: headers)
-      .then((resp) {
-    return json.decode(resp.body);
-  });
-}
-
-Future addSubscriptionData(
-    {String? orderid,
-    String? purchasetime,
-    String? expirytime,
-    String? productid,
-    bool? status,
-    String? email}) async {
-  var data = {
-    'order_id': orderid,
-    'purchase_time': purchasetime,
-    'expiry_time': expirytime,
-    'product_id': productid,
-    'status': status == true ? 1 : 0,
-    'email': email
-  };
-  print("<<<<<<<<<<<<<<<<<<<<<<<<<< data >>>>>>>>>>>>>>>>>>>>>>>>>>");
-  print(data);
-  var body = json.encode(data);
-  return await http
-      .post(Uri.https(api, '/api/subscriptions/create'),
-          body: body, headers: headers)
-      .then((resp) {
-    return json.decode(resp.body);
-  });
-}
-
-String getSubscriptionExpiry() {
-  var date = DateTime.now();
-  var expiryDate = date.add(Duration(days: 366));
-  return (expiryDate.millisecondsSinceEpoch ~/ 1000).toString();
-}
-
 generateRandomNumber({required int min, required int max}) {
   /**
  * Generates a positive random integer uniformly distributed on the range
  * from [min], inclusive, to [max], exclusive.
  */
   return min + random.nextInt(max - min);
-}
-
-Future getUserSubscriptionData({String? email}) async {
-  return await http
-      .get(Uri.https(api, '/api/subscriptions/' + email.toString()),
-          headers: headers)
-      .then((resp) {
-    return json.decode(resp.body);
-  });
 }

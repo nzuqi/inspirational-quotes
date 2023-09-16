@@ -31,7 +31,6 @@ PageController _controller = PageController(
 );
 
 Future<bool> _getAllQuotes() async {
-  countFavorites = 0;
   bool state = false;
   await getAllLocalQuotes().then((resp) {
     allQuotes = resp;
@@ -42,9 +41,6 @@ Future<bool> _getAllQuotes() async {
         "author": element['author'],
         "is_favorite": (element['favorite'] == 1) ? true : false,
       });
-      if (element['favorite'] == 1) {
-        countFavorites++;
-      }
     });
     //_renderedQuotes.shuffle();
     state = true;
@@ -142,6 +138,8 @@ class _MyAppState extends State<MyApp> {
   _houseKeeping() async {
     favEnabled = await dbHelper.queryWhere(DatabaseHelper.settingsTable,
         DatabaseHelper.columnSetting, ['fav_conf_enabled']);
+    pushEnabled = await dbHelper.queryWhere(DatabaseHelper.settingsTable,
+        DatabaseHelper.columnSetting, ['push_enabled']);
   }
 
   void getCurrentAppTheme() async {
@@ -331,21 +329,17 @@ class _AppShellState extends State<AppShell> {
                                   elevation: 0.5,
                                   automaticallyImplyLeading: false,
                                   actions: <Widget>[
-                                    ((_currentPage == 0 && isSubscribed) ||
-                                            (_currentPage == 0 && isOnTrial))
-                                        ? Padding(
-                                            padding: EdgeInsets.only(
-                                                top: 15.0, right: 12.0),
-                                            child: IconButton(
-                                              icon: Icon(MdiIcons.magnify,
-                                                  color: Theme.of(context)
-                                                      .indicatorColor),
-                                              iconSize: 22.0,
-                                              onPressed: () =>
-                                                  searchQuoteDialog(),
-                                            ),
-                                          )
-                                        : SizedBox(),
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          top: 15.0, right: 12.0),
+                                      child: IconButton(
+                                        icon: Icon(MdiIcons.magnify,
+                                            color: Theme.of(context)
+                                                .indicatorColor),
+                                        iconSize: 22.0,
+                                        onPressed: () => searchQuoteDialog(),
+                                      ),
+                                    ),
                                     Padding(
                                       padding: EdgeInsets.only(
                                           top: 15.0, right: 12.0),
@@ -768,41 +762,10 @@ class _AppShellState extends State<AppShell> {
                   color: Theme.of(context).bottomAppBarColor,
                   iconSize: 20.0,
                   onPressed: () {
-                    // if (isSubscribed || isOnTrial) {
-                    _favoriteQuote(currentQuote['is_favorite'] ? false : true,
-                        currentQuote['id']);
-                    if (currentQuote['is_favorite']) {
-                      setState(() {
-                        countFavorites--;
-                      });
-                    } else {
-                      setState(() {
-                        countFavorites++;
-                      });
-                    }
-                    // } else {
-                    //   if (countFavorites >= favoritesLimit) {
-                    //     showSnackbar(
-                    //         context: context,
-                    //         duration: 3,
-                    //         message:
-                    //             "Subscribe to Pro to favorite more quotes.",
-                    //         backgroundColor: Colors.deepOrange);
-                    //   } else {
-                    //     _favoriteQuote(
-                    //         currentQuote['is_favorite'] ? false : true,
-                    //         currentQuote['id']);
-                    //     if (currentQuote['is_favorite']) {
-                    //       setState(() {
-                    //         countFavorites--;
-                    //       });
-                    //     } else {
-                    //       setState(() {
-                    //         countFavorites++;
-                    //       });
-                    //     }
-                    //   }
-                    // }
+                    _favoriteQuote(
+                      currentQuote['is_favorite'] ? false : true,
+                      currentQuote['id'],
+                    );
                   },
                 ),
                 // Visibility(

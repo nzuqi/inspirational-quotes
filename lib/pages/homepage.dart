@@ -106,17 +106,9 @@ class _HomepageState extends State<Homepage> {
                     : MdiIcons.heartOutline,
                 onPressed: (BuildContext context) {
                   _favoriteQuote(
-                      _renderedQuotes[index]['is_favorite'] ? false : true,
-                      _renderedQuotes[index]['id']);
-                  if (_renderedQuotes[index]['is_favorite']) {
-                    setState(() {
-                      countFavorites--;
-                    });
-                  } else {
-                    setState(() {
-                      countFavorites++;
-                    });
-                  }
+                    _renderedQuotes[index]['is_favorite'] ? false : true,
+                    _renderedQuotes[index]['id'],
+                  );
                 },
               ),
               SlidableAction(

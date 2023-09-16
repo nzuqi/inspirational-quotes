@@ -45,7 +45,6 @@ class _FavoritesState extends State<Favorites> {
                       _renderedQuotes[index]['id']);
                   setState(() {
                     _renderedQuotes.removeAt(index);
-                    countFavorites--;
                   });
                   // showSnackbar(context: context, duration: 2, message: "Quote removed from favorites");
                 },
