@@ -204,7 +204,7 @@ class _AppShellState extends State<AppShell> {
     // ignore: deprecated_member_use
     List<Widget> list = <Widget>[];
     _renderedQuotes.forEach((f) {
-      list.add(homeSwiper(context: context, currentQuote: f));
+      list.add(homeSwiper(context: context, quote: f));
     });
     return list;
   }
@@ -599,17 +599,17 @@ class _AppShellState extends State<AppShell> {
                     ),
                     onPressed: () {
                       setState(() {
-                        _renderedQuotes.shuffle();
-                        initialPage =
-                            random.nextInt(_renderedQuotes.length) + 1;
+                        // _renderedQuotes.shuffle();
+                        initialPage = random.nextInt(_renderedQuotes.length);
                         // _controller.jumpToPage(initialPage);
-                        _controller.animateToPage(initialPage,
-                            duration: Duration(seconds: 1),
-                            curve: Curves.decelerate);
+                        _controller.animateToPage(
+                          initialPage,
+                          duration: Duration(milliseconds: 600),
+                          curve: Curves.easeInOut,
+                        );
                       });
                     },
                   ),
-                  // (isSubscribed || isOnTrial) ?
                   IconButton(
                     tooltip: "Search quotes",
                     icon: Icon(
@@ -621,7 +621,6 @@ class _AppShellState extends State<AppShell> {
                       searchQuoteDialog();
                     },
                   ),
-                  // : SizedBox(),
                   IconButton(
                     tooltip: "More...",
                     icon: Icon(
@@ -651,7 +650,8 @@ class _AppShellState extends State<AppShell> {
     }
   }
 
-  Widget homeSwiper({required BuildContext context, dynamic currentQuote}) {
+  Widget homeSwiper({required BuildContext context, dynamic quote}) {
+    Map<String, dynamic> currentQuote = Map<String, dynamic>.from(quote);
     return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -773,8 +773,7 @@ class _AppShellState extends State<AppShell> {
                     bool v = currentQuote['is_favorite'] ? false : true;
                     _favoriteQuote(v, currentQuote['id']);
                     currentQuote['is_favorite'] = !v;
-                    allQuotes[allQuotes.indexWhere(
-                        (q) => q['_id'] == currentQuote['id'])] = currentQuote;
+                    // allQuotes[allQuotes.indexWhere((q) => q['_id'] == currentQuote['id'])] = currentQuote;
                   },
                 ),
                 // Visibility(
@@ -793,11 +792,10 @@ class _AppShellState extends State<AppShell> {
   }
 
   Future _favoriteQuote(bool favorite, int id) async {
-    // var resp = await favoriteQuote(favorite, id);
-    // setState(() {
-    //   _renderedQuotes = resp;
-    // });
-    await favoriteQuote(favorite, id);
+    var resp = await favoriteQuote(favorite, id);
+    setState(() {
+      _renderedQuotes = resp;
+    });
     var msg = favorite ? "added to" : "removed from";
     showSnackbar(
       context: context,
