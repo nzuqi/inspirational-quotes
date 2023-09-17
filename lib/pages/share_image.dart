@@ -861,9 +861,9 @@ class _ShareImageDialog extends State<ShareImageDialog>
     File imgFile = File(_filename);
     imgFile.writeAsBytesSync(pngBytes);
 
-//    const MethodChannel _channel = MethodChannel('image_gallery_saver');
-//    print(MethodChannel);
-//    await _channel.invokeMethod('saveFileToGallery', _filename);
+    // https://pub.dev/packages/image_gallery_saver
+    // const MethodChannel _channel = MethodChannel('image_gallery_saver');
+    // await _channel.invokeMethod('saveFileToGallery', _filename);
 
     setState(() {
       previewImage = _filename;
@@ -1462,12 +1462,11 @@ class _ShareImageDialog extends State<ShareImageDialog>
   }
 
   void share() {
-    Share.share(previewImage!);
+    Share.shareXFiles([XFile(previewImage!)]);
   }
 
   Future getImageFromGallery() async {
-    // ignore: deprecated_member_use
-    var image = await ImagePicker().getImage(source: ImageSource.gallery);
+    var image = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (image != null) {
       setState(() {
         imageSource = "gallery";
