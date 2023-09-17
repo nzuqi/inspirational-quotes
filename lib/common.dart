@@ -124,7 +124,6 @@ void initAppSettings() async {
 
 void getAppSettings() async {
   final allRows = await dbHelper.queryAllRows(DatabaseHelper.settingsTable);
-  print('query all rows:');
   allRows.forEach((row) => print(row));
 }
 
@@ -189,7 +188,6 @@ showSnackbarWithCallback(
 
 Future<bool> initQuotes() async {
   int? count = await dbHelper.queryRowCount(DatabaseHelper.quotesTable);
-  print(count);
   if (count == 0) {
     return await _overwriteLocalDB();
   } else {
@@ -216,8 +214,6 @@ Future _overwriteLocalDB() async {
       return true;
     }
   }).catchError((error) {
-    print("Error ======>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    print(error);
     return false;
   });
 }

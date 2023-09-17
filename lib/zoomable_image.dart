@@ -102,7 +102,7 @@ class _ZoomableImageState extends State<ZoomableImage> {
   }
 
   void _handleScaleStart(ScaleStartDetails d) {
-    print("starting scale at ${d.focalPoint} from $_offset $_scale");
+    // print("starting scale at ${d.focalPoint} from $_offset $_scale");
     _startingFocalPoint = d.focalPoint;
     _previousOffset = _offset;
     _previousScale = _scale;

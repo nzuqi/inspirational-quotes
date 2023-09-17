@@ -65,7 +65,7 @@ class DatabaseHelper {
             ''');
       await batch.commit();
     } catch (error) {
-      print(error);
+      // print(error);
     }
   }
 
@@ -90,7 +90,7 @@ class DatabaseHelper {
       //dynamic result = await batch.commit();
       //return result;
     } catch (error) {
-      print(error);
+      // print(error);
     }
   }
 
