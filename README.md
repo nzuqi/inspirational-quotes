@@ -2,6 +2,8 @@
 
 Inspr ~ Inspirational Quotes
 
+![Inspr](https://martin.co.ke/uploads/615ff20963f6a-1633677833.png)
+
 ## Getting Started
 
 This project has 1.7k+ free inspirational quotes.
