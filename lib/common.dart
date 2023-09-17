@@ -27,7 +27,7 @@ PackageInfo packageInfo = PackageInfo(
 Map<String, String> headers = {
   "Accept": "application/json",
   "content-type": "application/json",
-  "Authorization": "JnZvSW784mzDCOzuFEXV"
+  "authorization": Environment.authorizationKey
 };
 
 final dbHelper = DatabaseHelper.instance;
@@ -128,15 +128,19 @@ void getAppSettings() async {
 }
 
 Uri endpoint(String path) {
-  return kDebugMode
-      ? Uri.http(Environment.debugUrl, path)
-      : Uri.https(Environment.prodUrl, path);
+  return Uri.https(Environment.baseUrl, path);
 }
 
 Future getAllRemoteQuotes() async {
-  return await http.get(endpoint('/api/quotes'), headers: headers).then((resp) {
-    return json.decode(resp.body);
-  });
+  try {
+    return await http
+        .get(endpoint('/api/quotes'), headers: headers)
+        .then((resp) {
+      return json.decode(resp.body);
+    });
+  } catch (e) {
+    return false;
+  }
 }
 
 Future getAllLocalQuotes() async {
