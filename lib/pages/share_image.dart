@@ -137,10 +137,10 @@ class _ShareImageDialog extends State<ShareImageDialog>
     super.initState();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  // }
 
   // Future<String> _loadAImagesFromAsset() async {
   //   try {
@@ -183,27 +183,32 @@ class _ShareImageDialog extends State<ShareImageDialog>
     var _fontSizes = fontsizes.map<Widget>((font) {
       // ignore: avoid_unnecessary_containers
       return Container(
-          child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  fontSize = font["size"];
-                  selectedTextstyle = TextStyle(
-                      fontSize: font["size"],
-                      fontFamily: selectedFont,
-                      color: quoteColor);
-                });
+        child: GestureDetector(
+          onTap: () {
+            setState(
+              () {
+                fontSize = font["size"];
+                selectedTextstyle = TextStyle(
+                  fontSize: font["size"],
+                  fontFamily: selectedFont,
+                  color: quoteColor,
+                );
               },
-              child: Container(
-                color: Colors.blueGrey[800],
-                alignment: Alignment.center,
-                child: Text(
-                  "A",
-                  style: TextStyle(
-                    fontSize: font["size"],
-                    color: Colors.white,
-                  ),
-                ),
-              )));
+            );
+          },
+          child: Container(
+            color: Colors.blueGrey[800],
+            alignment: Alignment.center,
+            child: Text(
+              "A",
+              style: TextStyle(
+                fontSize: font["size"],
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      );
     }).toList();
     var _textAlignments = ["left", "center", "right"].map<Widget>((align) {
       // ignore: avoid_unnecessary_containers
@@ -317,23 +322,28 @@ class _ShareImageDialog extends State<ShareImageDialog>
                 });
               },
               child: Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                      border: _imagePreviewBorder,
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      boxShadow: const [
-                        BoxShadow(
-                            color: Colors.black,
-                            blurRadius: 10,
-                            offset: Offset(0.3, 0.6))
-                      ],
-                      color: _appBackgroundColor,
-                      shape: BoxShape.rectangle,
-                      image: DecorationImage(
-                          image: FileImage(File(previewImage!)),
-                          fit: BoxFit.cover))),
-            ))
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  border: _imagePreviewBorder,
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black,
+                      blurRadius: 10,
+                      offset: Offset(0.3, 0.6),
+                    )
+                  ],
+                  color: _appBackgroundColor,
+                  shape: BoxShape.rectangle,
+                  image: DecorationImage(
+                    image: FileImage(File(previewImage!)),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+          )
         : Container();
   }
 
@@ -646,53 +656,55 @@ class _ShareImageDialog extends State<ShareImageDialog>
   Widget _bottomSheetScrollButton(BuildContext context, _width, _height,
       _middleHeightBottomSheet, _maxHeightBottomSheet) {
     return GestureDetector(
-        onTap: () {
-          setState(() {
-            _sliderHeight = _sliderHeight == _initialSliderHeight
-                ? _middleHeightBottomSheet
-                : _sliderHeight == _maxHeightBottomSheet
-                    ? _initialSliderHeight
-                    : _maxHeightBottomSheet;
-          });
-        },
-        onVerticalDragUpdate: (drag) {
-          setState(() {
-            _sliderHeight = drag.globalPosition.dy < _height - 30
-                ? _height - drag.globalPosition.dy
-                : _initialSliderHeight;
-          });
-        },
-        onVerticalDragEnd: (drag) {
-          setState(() {
-            _sliderHeight = _sliderHeight > _height / 2
-                ? _maxHeightBottomSheet
-                : _sliderHeight > _height / 3
-                    ? _middleHeightBottomSheet
-                    : _initialSliderHeight;
-          });
-        },
+      onTap: () {
+        setState(() {
+          _sliderHeight = _sliderHeight == _initialSliderHeight
+              ? _middleHeightBottomSheet
+              : _sliderHeight == _maxHeightBottomSheet
+                  ? _initialSliderHeight
+                  : _maxHeightBottomSheet;
+        });
+      },
+      onVerticalDragUpdate: (drag) {
+        setState(() {
+          _sliderHeight = drag.globalPosition.dy < _height - 30
+              ? _height - drag.globalPosition.dy
+              : _initialSliderHeight;
+        });
+      },
+      onVerticalDragEnd: (drag) {
+        setState(() {
+          _sliderHeight = _sliderHeight > _height / 2
+              ? _maxHeightBottomSheet
+              : _sliderHeight > _height / 3
+                  ? _middleHeightBottomSheet
+                  : _initialSliderHeight;
+        });
+      },
+      child: Container(
+        width: _width,
+        alignment: Alignment.center,
         child: Container(
-          width: _width,
-          alignment: Alignment.center,
-          child: Container(
-              width: 140,
-              height: 40,
-              color: Colors.transparent,
-              child: Padding(
-                  padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
-                  child: RotatedBox(
-                    quarterTurns:
-                        _sliderHeight == _maxHeightBottomSheet ? 3 : 1,
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: Icon(
-                        MdiIcons.chevronLeft,
-                        color: Colors.white70,
-                        size: 30,
-                      ),
-                    ),
-                  ))),
-        ));
+          width: 140,
+          height: 40,
+          color: Colors.transparent,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
+            child: RotatedBox(
+              quarterTurns: _sliderHeight == _maxHeightBottomSheet ? 3 : 1,
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: Icon(
+                  MdiIcons.chevronLeft,
+                  color: Colors.white70,
+                  size: 30,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _makeBackground(image) {
@@ -708,22 +720,42 @@ class _ShareImageDialog extends State<ShareImageDialog>
         decoration: BoxDecoration(
           color: Colors.blueGrey,
           shape: BoxShape.rectangle,
+          // border: Border.all(color:  backgroundImage == image ? Colors.white : Colors.transparent, width: 2, ),
         ),
-        child: CachedNetworkImage(
-          placeholder: (context, url) => CircularProgressIndicator(),
-          imageUrl: image + "?w=1200",
-          imageBuilder: (context, imageProvider) => Container(
-            decoration: BoxDecoration(
-                image:
-                    DecorationImage(image: imageProvider, fit: BoxFit.cover)),
-          ),
-          // ignore: avoid_unnecessary_containers
-          errorWidget: (context, url, error) => Container(
-            child: Icon(
-              Icons.error,
-              color: Colors.white70,
+        child: Stack(
+          children: [
+            CachedNetworkImage(
+              placeholder: (context, url) => CircularProgressIndicator(),
+              imageUrl: image + "?w=1200",
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  image:
+                      DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                ),
+              ),
+              // ignore: avoid_unnecessary_containers
+              errorWidget: (context, url, error) => Container(
+                child: Icon(
+                  Icons.error,
+                  color: Colors.white70,
+                ),
+              ),
             ),
-          ),
+            backgroundImage == image
+                ? Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: Colors.orange.withOpacity(0.3),
+                    child: Center(
+                      child: Icon(
+                        MdiIcons.check,
+                        color: Colors.white,
+                        size: 32,
+                      ),
+                    ),
+                  )
+                : SizedBox()
+          ],
         ),
       ),
     );
@@ -816,10 +848,11 @@ class _ShareImageDialog extends State<ShareImageDialog>
               alignment: Alignment.center,
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                  color: Colors.orange[800],
-                  borderRadius: BorderRadius.all(Radius.circular(0)),
-                  border: Border.all(
-                      color: Colors.orange[800] ?? Colors.orange, width: 3)),
+                color: Colors.orange[800],
+                borderRadius: BorderRadius.all(Radius.circular(0)),
+                border: Border.all(
+                    color: Colors.orange[800] ?? Colors.orange, width: 3),
+              ),
               child: Text(
                 fontStyle["text"],
                 overflow: TextOverflow.fade,
