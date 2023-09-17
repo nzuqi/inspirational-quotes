@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'package:flutter/foundation.dart';
+import 'package:inspr/env.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'database_helper.dart';
 import 'dart:convert';
@@ -10,8 +12,6 @@ final GlobalKey<ScaffoldState> mainScaffoldKey = GlobalKey<ScaffoldState>();
 dynamic pushEnabled = {};
 dynamic favEnabled = {};
 dynamic userOnboarding = {};
-
-String api = 'inspr.martin.co.ke:5302';
 
 int trialDays = 0;
 
@@ -127,10 +127,14 @@ void getAppSettings() async {
   allRows.forEach((row) => print(row));
 }
 
+Uri endpoint(String path) {
+  return kDebugMode
+      ? Uri.http(Environment.debugUrl, path)
+      : Uri.https(Environment.prodUrl, path);
+}
+
 Future getAllRemoteQuotes() async {
-  return await http
-      .get(Uri.https(api, '/api/quotes'), headers: headers)
-      .then((resp) {
+  return await http.get(endpoint('/api/quotes'), headers: headers).then((resp) {
     return json.decode(resp.body);
   });
 }
