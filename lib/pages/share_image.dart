@@ -111,6 +111,11 @@ class _ShareImageDialog extends State<ShareImageDialog>
     "https://images.unsplash.com/photo-1518156677180-95a2893f3e9f",
     "https://images.unsplash.com/photo-1529950285869-b8f6cf5a7fd0",
     "https://images.unsplash.com/photo-1519074069444-1ba4fff66d16",
+    "https://images.unsplash.com/photo-1682687218608-5e2522b04673",
+    "https://images.unsplash.com/photo-1549577748-efbbdefd7bb0",
+    "https://images.unsplash.com/photo-1556648011-e01aca870a81",
+    "https://images.unsplash.com/photo-1534364432722-54585249d766",
+    "https://images.unsplash.com/photo-1429734956993-8a9b0555e122",
   ];
 
   String backgroundImage =
